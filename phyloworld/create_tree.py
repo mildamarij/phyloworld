@@ -12,7 +12,7 @@ AVAILABLE_COLORS = [
     "rgb(502, 102, 152)", "rgb(204, 204, 204)", "rgb(200, 36, 17)",
     "rgb(114, 147, 203)", "rgb(83, 81, 84)", "rgb(147, 160, 61)",
     "rgb(169, 170, 68)", "rgb(193, 190, 70)", "rgb(93, 162, 233)"
-    ]
+]
 
 def get_x_coordinates(tree):
     xcoords = tree.depths()
@@ -57,8 +57,7 @@ def get_clade_lines(orientation='horizontal', y_curr=0, x_start=0, x_curr=0, y_b
     return branch_line
 
 
-def draw_clade(clade, x_start, line_shapes, line_color='rgb(15,15,15)', line_width=1, x_coords=0, y_coords=0):
-
+def draw_clade(clade, x_start, line_shapes, annotations, line_color='rgb(15,15,15)', line_width=1, x_coords=0, y_coords=0, include_confidence=True):
     x_curr = x_coords[clade]
     y_curr = y_coords[clade]
 
@@ -66,6 +65,26 @@ def draw_clade(clade, x_start, line_shapes, line_color='rgb(15,15,15)', line_wid
                                   line_color=line_color, line_width=line_width)
 
     line_shapes.append(branch_line)
+    
+    confidence = getattr(clade, 'confidence', None)
+    if confidence is not None and include_confidence:
+        box_annotation = dict(
+            xref="x",
+            yref="y",
+            x=x_curr,  
+            y=y_curr,  
+            showarrow=False,
+            bgcolor='rgba(255, 255, 255, 0.7)',
+            bordercolor='rgb(25,25,25)',
+            borderwidth=1,
+            font=dict(size=6),
+            align='right',
+            xanchor='right',
+            yanchor='bottom',
+            text=f'{confidence:.2f}',
+        )
+
+        annotations.append(box_annotation)
 
     if clade.clades:
         y_top = y_coords[clade.clades[0]]
@@ -75,13 +94,17 @@ def draw_clade(clade, x_start, line_shapes, line_color='rgb(15,15,15)', line_wid
                                            line_color=line_color, line_width=line_width))
 
         for child in clade:
-            draw_clade(child, x_curr, line_shapes, x_coords=x_coords, y_coords=y_coords)
-            
-def create_plot(tree, x_coords, y_coords, metadata, title, colors = AVAILABLE_COLORS):
+            draw_clade(child, x_curr, line_shapes, annotations, x_coords=x_coords, y_coords=y_coords, include_confidence=include_confidence)
+
+
+def create_plot(tree, x_coords, y_coords, metadata, title, colors=AVAILABLE_COLORS, include_confidence=True):
     line_shapes = []
-    draw_clade(tree.root, 0, line_shapes, line_color='rgb(25,25,25)', line_width=1, x_coords=x_coords, y_coords=y_coords)
-    
+    annotations = []
+
+    draw_clade(tree.root, 0, line_shapes, annotations, line_color='rgb(25,25,25)', line_width=1, x_coords=x_coords, y_coords=y_coords, include_confidence=include_confidence)
+
     X, Y, text, color = [], [], [], []
+
     color_map = generate_country_color_map(metadata, colors)
     label_legend = set(metadata["Country"].unique())
     color_scale = {country: color_map.get(country, 'rgb(100,100,100)') for country in label_legend}
@@ -106,7 +129,7 @@ def create_plot(tree, x_coords, y_coords, metadata, title, colors = AVAILABLE_CO
     )
 
     layout = go.Layout(
-        title= title,
+        title=title,
         paper_bgcolor='rgba(0,0,0,0)',
         xaxis=dict(title='Branch Length'),
         yaxis=dict(
@@ -119,14 +142,14 @@ def create_plot(tree, x_coords, y_coords, metadata, title, colors = AVAILABLE_CO
         hovermode='closest',
         shapes=line_shapes,
         plot_bgcolor='rgb(250,250,250)',
-        legend={'x': 0, 'y': 1}
+        legend=dict(x=0, y=1),
+        annotations=annotations 
     )
-
 
     fig = go.Figure(data=[trace], layout=layout)
     return fig
-    
-def generate_country_color_map(metadata, colors = AVAILABLE_COLORS):
+
+def generate_country_color_map(metadata, colors=AVAILABLE_COLORS):
     unique_countries = metadata["Country"].unique()
     color_map = {}
 
@@ -135,8 +158,8 @@ def generate_country_color_map(metadata, colors = AVAILABLE_COLORS):
 
     return color_map
 
-def create_phylotree(tree, metadata, title = "", colors = AVAILABLE_COLORS):
+def create_phylotree(tree, metadata, title = "", colors = AVAILABLE_COLORS, include_confidence=True):
     x_coords = get_x_coordinates(tree)
     y_coords = get_y_coordinates(tree)
-    fig = create_plot(tree, x_coords, y_coords, metadata, title, colors)
+    fig = create_plot(tree, x_coords, y_coords, metadata, title, colors, include_confidence)
     return fig
