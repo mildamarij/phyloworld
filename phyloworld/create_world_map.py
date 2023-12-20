@@ -1,28 +1,12 @@
 import pandas as pd
-import plotly.plotly as py
+from chart_studio import plotly
 import plotly.graph_objects as go
 import plotly.express as px
+from .create_tree import generate_country_color_map
+from .create_tree import AVAILABLE_COLORS
 
-def generate_country_color_map(metadata):
-    unique_countries = metadata["Country"].unique()
-    color_map = {}
-    available_colors = [
-    "rgb(31, 119, 180)", "rgb(255, 127, 14)", "rgb(44, 160, 44)",
-    "rgb(214, 39, 40)", "rgb(148, 103, 189)", "rgb(140, 86, 75)",
-    "rgb(227, 119, 194)", "rgb(127, 127, 127)", "rgb(188, 189, 34)",
-    "rgb(23, 190, 207)", "rgb(240, 228, 66)", "rgb(65, 244, 47)",
-    "rgb(502, 102, 152)", "rgb(204, 204, 204)", "rgb(200, 36, 17)",
-    "rgb(114, 147, 203)", "rgb(83, 81, 84)", "rgb(147, 160, 61)",
-    "rgb(169, 170, 68)", "rgb(193, 190, 70)", "rgb(93, 162, 233)"
-    ]
-
-    for i, country in enumerate(unique_countries):
-        color_map[country] = available_colors[i % len(available_colors)]
-
-    return color_map
-
-def create_world_map(metadata, title="", map_type="choropleth"):
-    color_map = generate_country_color_map(metadata)
+def create_world_map(metadata, title="", map_type="choropleth", colors = AVAILABLE_COLORS):
+    color_map = generate_country_color_map(metadata, colors)
 
     fig = go.Figure()
 

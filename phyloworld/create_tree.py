@@ -1,7 +1,18 @@
 import pandas as pd
 from Bio import Phylo
 import matplotlib.pyplot as plt
+from chart_studio import plotly
 import plotly.graph_objects as go
+
+AVAILABLE_COLORS = [
+    "rgb(31, 119, 180)", "rgb(255, 127, 14)", "rgb(44, 160, 44)",
+    "rgb(214, 39, 40)", "rgb(148, 103, 189)", "rgb(140, 86, 75)",
+    "rgb(227, 119, 194)", "rgb(127, 127, 127)", "rgb(188, 189, 34)",
+    "rgb(23, 190, 207)", "rgb(240, 228, 66)", "rgb(65, 244, 47)",
+    "rgb(502, 102, 152)", "rgb(204, 204, 204)", "rgb(200, 36, 17)",
+    "rgb(114, 147, 203)", "rgb(83, 81, 84)", "rgb(147, 160, 61)",
+    "rgb(169, 170, 68)", "rgb(193, 190, 70)", "rgb(93, 162, 233)"
+    ]
 
 def get_x_coordinates(tree):
     xcoords = tree.depths()
@@ -66,12 +77,12 @@ def draw_clade(clade, x_start, line_shapes, line_color='rgb(15,15,15)', line_wid
         for child in clade:
             draw_clade(child, x_curr, line_shapes, x_coords=x_coords, y_coords=y_coords)
             
-def create_plot(tree, x_coords, y_coords, metadata, title):
+def create_plot(tree, x_coords, y_coords, metadata, title, colors = AVAILABLE_COLORS):
     line_shapes = []
     draw_clade(tree.root, 0, line_shapes, line_color='rgb(25,25,25)', line_width=1, x_coords=x_coords, y_coords=y_coords)
     
     X, Y, text, color = [], [], [], []
-    color_map = generate_country_color_map(metadata)
+    color_map = generate_country_color_map(metadata, colors)
     label_legend = set(metadata["Country"].unique())
     color_scale = {country: color_map.get(country, 'rgb(100,100,100)') for country in label_legend}
 
@@ -115,26 +126,17 @@ def create_plot(tree, x_coords, y_coords, metadata, title):
     fig = go.Figure(data=[trace], layout=layout)
     return fig
     
-def generate_country_color_map(metadata):
+def generate_country_color_map(metadata, colors = AVAILABLE_COLORS):
     unique_countries = metadata["Country"].unique()
     color_map = {}
-    available_colors = [
-    "rgb(31, 119, 180)", "rgb(255, 127, 14)", "rgb(44, 160, 44)",
-    "rgb(214, 39, 40)", "rgb(148, 103, 189)", "rgb(140, 86, 75)",
-    "rgb(227, 119, 194)", "rgb(127, 127, 127)", "rgb(188, 189, 34)",
-    "rgb(23, 190, 207)", "rgb(240, 228, 66)", "rgb(65, 244, 47)",
-    "rgb(502, 102, 152)", "rgb(204, 204, 204)", "rgb(200, 36, 17)",
-    "rgb(114, 147, 203)", "rgb(83, 81, 84)", "rgb(147, 160, 61)",
-    "rgb(169, 170, 68)", "rgb(193, 190, 70)", "rgb(93, 162, 233)"
-    ]
 
     for i, country in enumerate(unique_countries):
-        color_map[country] = available_colors[i % len(available_colors)]
+        color_map[country] = colors[i % len(colors)]
 
     return color_map
 
-def create_phylotree(tree, metadata, title = ""):
+def create_phylotree(tree, metadata, title = "", colors = AVAILABLE_COLORS):
     x_coords = get_x_coordinates(tree)
     y_coords = get_y_coordinates(tree)
-    fig = create_plot(tree, x_coords, y_coords, metadata, title)
+    fig = create_plot(tree, x_coords, y_coords, metadata, title, colors)
     return fig
