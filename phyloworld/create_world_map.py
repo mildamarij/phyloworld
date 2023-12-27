@@ -1,11 +1,23 @@
 import pandas as pd
 from chart_studio import plotly
 import plotly.graph_objects as go
-import plotly.express as px
 from .create_tree import generate_country_color_map
-from .create_tree import AVAILABLE_COLORS
 
-def create_world_map(metadata, title="", map_type="choropleth", colors = AVAILABLE_COLORS):
+
+def create_world_map(metadata, title="", map_type="choropleth", colors=None):
+    """
+    Create a world map visualization based on country metadata.
+
+    Parameters:
+    - metadata (pd.DataFrame): A DataFrame containing metadata with a "Country" column.
+    For scatter plot Latitude and Longitude columns are also needed.
+    - title (str): Title for the map.
+    - map_type (str): Type of map ("choropleth" or "scatter"), by default choropleth.
+    - colors (dict, optional): A mapping of countries to colors, by default random colours are generated.
+
+    Returns:
+    - fig (go.Figure): A Plotly figure object representing the world map.
+    """
     color_map = generate_country_color_map(metadata, colors)
 
     fig = go.Figure()
@@ -47,12 +59,9 @@ def create_world_map(metadata, title="", map_type="choropleth", colors = AVAILAB
         coastlinecolor="rgb(255, 255, 255)",
         showland=True,
         landcolor="rgb(217, 217, 217)",
-        showocean=True,
-        oceancolor="rgb(199, 215, 255)",
         showcountries=True,
         countrycolor="rgb(0, 0, 0)",
         countrywidth=0.5,
-        subunitcolor="rgb(255, 255, 255)",
         lonaxis=dict(range=[-180, 180]),
         lataxis=dict(range=[-90, 90]),
     )
