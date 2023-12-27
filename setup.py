@@ -9,8 +9,6 @@ setup(
     description='Phyloworld is a Python package that facilitates the visualization and analysis of phylogenetic trees alongside geographic information.',
     packages=find_packages(),
     install_requires=[
-        'python==3.11',
-        'pip==23.0.1',
         'pandas==1.3.4',
         'notebook==7.0.6',
         'plotly==5.18.0',
