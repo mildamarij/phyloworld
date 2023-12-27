@@ -13,7 +13,7 @@ setup(
         'notebook==7.0.6',
         'plotly==5.18.0',
         'biopython==1.81',
-        'requests==2.26.0',
+        'requests==2.31.0',
         'chart-studio==1.1.0',
     ]
 )
