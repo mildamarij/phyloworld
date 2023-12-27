@@ -17,3 +17,9 @@ For detailed usage examples, refer to the [example.ipynb](example.ipynb) noteboo
 
 ## Instalation
 
+```{bash}
+git clone https://github.com/mildamarij/phyloworld
+cd phyloworld
+pip install .
+```
+
