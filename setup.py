@@ -6,12 +6,12 @@ def read_requirements(file):
 requirements = read_requirements("requirements.txt")
 
 setup(
-    name = 'phylowordl',
+    name = 'phyloworld',
     version = "1.0",
     author = 'Milda Milčiūtė',
     author_email = 'milda.milciute@yahoo.com',
     url = 'https://github.com/mildamarij/phyloworld/tree/main',
     description = 'Phyloworld is a Python package that facilitates the visualization and analysis of phylogenetic trees alongside geographic information.',
-    packages = find_packages(exclude=["test"]),  
+    packages = find_packages(),  
     install_requires = requirements
 )
