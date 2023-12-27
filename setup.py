@@ -1,17 +1,24 @@
 from setuptools import setup, find_packages
 
-def read_requirements(file):
-    with open(file) as f:
-        return f.read().splitlines()
-requirements = read_requirements("requirements.txt")
-
 setup(
-    name = 'phyloworld',
-    version = "1.0",
-    author = 'Milda Milčiūtė',
-    author_email = 'milda.milciute@yahoo.com',
-    url = 'https://github.com/mildamarij/phyloworld/tree/main',
-    description = 'Phyloworld is a Python package that facilitates the visualization and analysis of phylogenetic trees alongside geographic information.',
-    packages = find_packages(),  
-    install_requires = requirements
+    name='phyloworld',
+    version="1.0",
+    author='Milda Milčiūtė',
+    author_email='milda.milciute@yahoo.com',
+    url='https://github.com/mildamarij/phyloworld/tree/main',
+    description='Phyloworld is a Python package that facilitates the visualization and analysis of phylogenetic trees alongside geographic information.',
+    packages=find_packages(),
+    install_requires=[
+        'python==3.11',
+        'pip==23.0.1',
+        'pandas==1.3.4',
+        'notebook==7.0.6',
+        'matplotlib==3.5.1',
+        'plotly==5.18.0',
+        'python-newick==1.9.0',
+        'biopython==1.81',
+        'requests==2.26.0',
+        'chart-studio==1.1.0',
+        'setuptools==68.2.2'
+    ]
 )
