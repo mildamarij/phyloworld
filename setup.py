@@ -13,12 +13,9 @@ setup(
         'pip==23.0.1',
         'pandas==1.3.4',
         'notebook==7.0.6',
-        'matplotlib==3.5.1',
         'plotly==5.18.0',
-        'python-newick==1.9.0',
         'biopython==1.81',
         'requests==2.26.0',
         'chart-studio==1.1.0',
-        'setuptools==68.2.2'
     ]
 )
