@@ -66,6 +66,10 @@ def create_world_map(metadata, title="", map_type="choropleth", colors=None):
         lataxis=dict(range=[-90, 90]),
     )
 
-    fig.update_layout(title_text=title)
+    fig.update_layout(
+        title_text=title,
+        height=600,
+        width=1000
+    )
 
     return fig

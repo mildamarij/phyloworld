@@ -248,6 +248,8 @@ def create_plot(
         plot_bgcolor="rgb(250,250,250)",
         legend=dict(x=0, y=1),
         annotations=annotations,
+        height=600,
+        width=1000
     )
 
     fig = go.Figure(data=[trace], layout=layout)
