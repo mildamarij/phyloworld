@@ -50,14 +50,7 @@ def get_y_coordinates(tree):
 
 
 def get_clade_lines(
-    orientation="horizontal",
-    y_curr=0,
-    x_start=0,
-    x_curr=0,
-    y_bot=0,
-    y_top=0,
-    line_color="rgb(25,25,25)",
-    line_width=0.5,
+    orientation="horizontal", y_curr=0, x_start=0, x_curr=0, y_bot=0, y_top=0
 ):
     """
     Get the shape of a branch line for a clade.
@@ -69,14 +62,12 @@ def get_clade_lines(
     - x_curr: Ending x-coordinate.
     - y_bot: Bottom y-coordinate for vertical lines.
     - y_top: Top y-coordinate for vertical lines.
-    - line_color: Color of the line.
-    - line_width: Width of the line.
 
     Returns:
     - branch_line: Dictionary representing the branch line shape.
     """
     branch_line = dict(
-        type="line", layer="below", line=dict(color=line_color, width=line_width)
+        type="line", layer="below", line=dict(color="rgb(25,25,25)", width=1)
     )
     if orientation == "horizontal":
         branch_line.update(x0=x_start, y0=y_curr, x1=x_curr, y1=y_curr)
@@ -92,8 +83,6 @@ def draw_clade(
     x_start,
     line_shapes,
     annotations,
-    line_color="rgb(15,15,15)",
-    line_width=1,
     x_coords=0,
     y_coords=0,
     include_confidence=True,
@@ -106,8 +95,6 @@ def draw_clade(
     - x_start: Starting x-coordinate for the clade.
     - line_shapes: List to store shapes of branch lines.
     - annotations: List to store annotations for confidence values.
-    - line_color: Color of the branch lines.
-    - line_width: Width of the branch lines.
     - x_coords: Dictionary of x-coordinates for each node in the tree.
     - y_coords: Dictionary of y-coordinates for each terminal node in the tree.
     - include_confidence: Flag to include confidence values in annotations, default is TRUE.
@@ -115,12 +102,7 @@ def draw_clade(
     x_curr = x_coords[clade]
     y_curr = y_coords[clade]
     branch_line = get_clade_lines(
-        orientation="horizontal",
-        y_curr=y_curr,
-        x_start=x_start,
-        x_curr=x_curr,
-        line_color=line_color,
-        line_width=line_width,
+        orientation="horizontal", y_curr=y_curr, x_start=x_start, x_curr=x_curr
     )
 
     line_shapes.append(branch_line)
@@ -151,21 +133,16 @@ def draw_clade(
 
         line_shapes.append(
             get_clade_lines(
-                orientation="vertical",
-                x_curr=x_curr,
-                y_bot=y_bot,
-                y_top=y_top,
-                line_color=line_color,
-                line_width=line_width,
+                orientation="vertical", x_curr=x_curr, y_bot=y_bot, y_top=y_top
             )
         )
 
         for child in clade:
             draw_clade(
-                child,
-                x_curr,
-                line_shapes,
-                annotations,
+                clade=child,
+                x_start=x_curr,
+                line_shapes=line_shapes,
+                annotations=annotations,
                 x_coords=x_coords,
                 y_coords=y_coords,
                 include_confidence=include_confidence,
@@ -198,8 +175,6 @@ def create_plot(
         0,
         line_shapes,
         annotations,
-        line_color="rgb(25,25,25)",
-        line_width=1,
         x_coords=x_coords,
         y_coords=y_coords,
         include_confidence=include_confidence,
@@ -208,19 +183,14 @@ def create_plot(
     X, Y, text, color = [], [], [], []
 
     color_map = generate_country_color_map(metadata, colors)
-    label_legend = set(metadata["Country"].unique())
-    color_scale = {
-        country: color_map.get(country, "rgb(100,100,100)") for country in label_legend
-    }
 
-    for cl in x_coords.keys():
-        if cl.is_terminal():
-            X.append(x_coords[cl])
-            Y.append(y_coords[cl])
-            node_id = cl.name
-            country = metadata.loc[metadata["ID"] == node_id, "Country"].values[0]
-            text.append(f"Country: {country}<br>ID: {node_id}")
-            color.append(color_scale[country])
+    for leaf in x_coords.keys():
+        if leaf.is_terminal():
+            X.append(x_coords[leaf])
+            Y.append(y_coords[leaf])
+            country = metadata.loc[metadata["ID"] == leaf.name, "Country"].values[0]
+            text.append(f"Country: {country}<br>ID: {leaf.name}")
+            color.append(color_map[country])
 
     trace = go.Scatter(
         x=X,
@@ -249,7 +219,7 @@ def create_plot(
         legend=dict(x=0, y=1),
         annotations=annotations,
         height=600,
-        width=1000
+        width=1000,
     )
 
     fig = go.Figure(data=[trace], layout=layout)
@@ -308,3 +278,4 @@ def create_phylotree(tree, metadata, title="", colors=None, include_confidence=T
         tree, x_coords, y_coords, metadata, title, colors, include_confidence
     )
     return fig
+
