@@ -20,7 +20,7 @@ def get_country_coordinates(country):
         country,
         "&format=json&polygon=0",
     )
-    response = requests.get(url).json()[0]
+    response = requests.get(url).json()
     if not response or len(response) == 0:
         raise ValueError(f"Coordinates not found for {country}")
     coordinates = [response[0].get(key) for key in ["lat", "lon"]]
